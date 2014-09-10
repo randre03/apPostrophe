@@ -26,6 +26,10 @@ Template.postItem.helpers({
         }
     },
 
+    postUrl: function () {
+        return this.shortUrl ? this.shortUrl : this.url;
+    },
+
     attributes: function () {
         var post = _.extend({}, Positions.findOne({postId: this._id}), this);
         var newPosition = post._rank * POST_HEIGHT;
