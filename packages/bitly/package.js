@@ -4,11 +4,11 @@ Package.describe({
   //git: " \* Fill me in! *\ "
 });
 
-Package.onUse(function(api) {
+Package.on_use(function (api) {
   //api.versionsFrom('METEOR@0.9.1.1');
-  api.addFiles('bitly.js', 'server');
+  api.add_files('bitly.js', 'server');
   if(api.export)
-    api.export('Bitly');
+        api.export('Bitly');
 });
 
 /*

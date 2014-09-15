@@ -47,15 +47,17 @@ Meteor.methods({
                 votes: 0
              });
 
-        // shorten link URL
-        if(!this.isSimulation){
-            var shortUrl = Bitly.shortenURL(post.url);
-            if(post.url && shortUrl)
-                post.shortUrl = shortUrl;
-        }
-            var postId = Posts.insert(post);
-            return postId;
-         },
+            // shorten link URL
+            if(!this.isSimulation){
+                var shortUrl = Bitly.shortenURL(post.url);
+                console.log("The link is: " + shortUrl);//delete this once bitly link has been solved
+                if(post.url && shortUrl)
+                    post.shortUrl = shortUrl;
+            }
+
+        var postId = Posts.insert(post);
+        return postId;
+    },
 
     upvote: function (postId) {
         var user = Meteor.user();
