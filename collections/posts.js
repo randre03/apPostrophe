@@ -50,7 +50,6 @@ Meteor.methods({
             // shorten link URL
             if(!this.isSimulation){
                 var shortUrl = Bitly.shortenURL(post.url);
-                console.log("The link is: " + shortUrl);//delete this once bitly link has been solved
                 if(post.url && shortUrl)
                     post.shortUrl = shortUrl;
             }

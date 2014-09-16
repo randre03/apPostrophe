@@ -1,28 +1,27 @@
 Bitly = {};
 
-Bitly.shortenURL = function (url) {
-    if(!Meteor.settings.bitly) {
-        throw new Meteor.Error(500, "Please provide a Bitly token in Meteor.settings");
-        console.log("Error providing Bitly token");
-    }
-
+Bitly.shortenURL = function(url){
+    if(!Meteor.settings.bitly)
+        throw new Meteor.Error(500, 'Please provide a Bitly token in Meteor.settings');
+    console.log("Here is the url before creating the shortened URL: " + url);
     var shortenResponse = Meteor.http.get(
         "https://api-ssl.bitly.com/v3/shorten?",
         {
-            timeout:    5000,
-            params: {
-                "format":       "json",
-                "access_token": Meteor.settings.bitly,
+            //timeout: 5000,
+            params:{
+                "access_token": "bfdaaf0438137bfd81fa4e19b5b2adc6f04878c6",
+                //"access_token": Meteor.settings.bitly,
+                "longUrl":      url,
                 "domain":       "bit.ly",
-                "longUrl":      url
+                "format":       "json"
             }
         }
     );
-
-    if(shortenResponse.statusCode == 200) {
-        return shortenResponse.data.data.url;
-    } else {
-        throw new Meteor.Error(500, "Bitly call failed with Error: " + shortenResponse.status_txt);
+    if(shortenResponse.statusCode == 200){
+        console.log(shortenResponse.data.data.url);
+        return shortenResponse.data.data.url
+    }else{
+        throw new Meteor.Error(500, "Bitly call failed with error: "+shortenResponse.status_txt);
     }
 };
 
@@ -51,21 +50,25 @@ Meteor.methods({
     }
 });
 
-var callInterval = 10000; // 1000ms *10 = 10 seconds
-Meteor.setInterval(function () {
-    //get all posts with the shortUrl property
+var callInterval = 10000; // 1000ms * 10 = 10s
 
+Meteor.setInterval(function(){
+    // get all posts with the shortUrl property
     var shortUrlPosts = Posts.find({shortUrl: { $exists: true }});
     var postsNumber = shortUrlPosts.count();
 
-    //initialize counter
+    // initialize counter
     var count = 0;
-    shortUrlPosts.forEach(function (post) {
-        //calculate the right delay to distribute API calls evenly throughout the interval
+
+    shortUrlPosts.forEach(function(post){
+        // calculate the right delay to distribute API calls evenly throughout the interval
         var callTimeout = Math.round(callInterval/postsNumber*count);
-        Meteor.setTimeout(function () {
+
+        Meteor.setTimeout(function(){
             Posts.update(post._id, {$set: {clicks: Bitly.getClicks(post.shortUrl)}});
         }, callTimeout);
+
         count++;
     });
+
 }, callInterval);
